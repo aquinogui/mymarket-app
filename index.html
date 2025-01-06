@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
+        /* Animações para transições */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -29,16 +30,17 @@
         }
     </style>
     <script>
+        // Configuração do Tailwind CSS
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: '#3498db',
-                        secondary: '#2ecc71',
-                        accent: '#e74c3c',
-                        background: '#ecf0f1',
-                        text: '#34495e',
+                        primary: '#3498db', // Cor primária
+                        secondary: '#2ecc71', // Cor secundária
+                        accent: '#e74c3c', // Cor de destaque
+                        background: '#ecf0f1', // Cor de fundo
+                        text: '#34495e', // Cor do texto
                     }
                 }
             }
@@ -49,16 +51,19 @@
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <header class="flex flex-col md:flex-row justify-between items-center mb-8 animate-slide-in">
             <div class="flex items-center mb-4 md:mb-0">
-                <img src="logo.png" alt="" class="h-16">
+                <img src="logo.png" alt="" class="h-16"> <!-- Logo do aplicativo -->
             </div>
             <div class="flex items-center space-x-4">
+                <!-- Botão para alternar modo escuro -->
                 <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-600">
                     <i class="fas fa-moon dark:hidden"></i>
                     <i class="fas fa-sun hidden dark:inline"></i>
                 </button>
+                <!-- Botão de ajuda -->
                 <button id="helpBtn" class="p-2 rounded-full bg-secondary text-white transition-colors duration-200 hover:bg-green-600">
                     <i class="fas fa-question"></i>
                 </button>
+                <!-- Botão da conta do usuário -->
                 <button id="userAccountBtn" class="p-2 rounded-full bg-primary text-white transition-colors duration-200 hover:bg-blue-600">
                     <i class="fas fa-user"></i>
                 </button>
@@ -67,6 +72,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 space-y-6">
+                <!-- Seção para adicionar produtos -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
                     <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-cart-plus mr-2 text-primary dark:text-secondary"></i>Adicionar Produto</h2>
                     <form id="quickAddForm" class="flex flex-wrap gap-2">
@@ -91,7 +97,6 @@
                             <option value="Higiene Pessoal">🧼 Higiene Pessoal</option>
                             <option value="Utensílios de Cozinha">🍽️ Utensílios de Cozinha</option>
                             <option value="Limpeza">🧼 Limpeza</option>
-                            <option value="Higiene">🧴 Higiene</option>
                             <option value="Hortifruti">🌽 Hortifruti</option>
                             <option value="Outros">🍽️ Outros</option>
                         </select>
@@ -101,6 +106,7 @@
                     </form>
                 </div>
 
+                <!-- Seção da calculadora inteligente -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
                     <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-calculator mr-2 text-primary dark:text-secondary"></i>Calculadora Inteligente</h2>
                     <div id="calculator" class="grid grid-cols-4 gap-2">
@@ -138,16 +144,19 @@
                             </select>
                             <button id="compareBtn" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-200">Comparar</button>
                         </div>
+                        <!-- Resultado da comparação de preços -->
                         <div id="comparisonResult" class="mt-2 text-sm bg-gray-100 dark:bg-gray-700 p-2 rounded"></div>
                     </div>
                 </div>
 
+                <!-- Seção da lista de compras -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
                     <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-shopping-cart mr-2 text-primary dark:text-secondary"></i>Lista de Compras</h2>
                     <div class="mb-4">
                         <input type="text" id="productSearch" placeholder="Pesquisar produto..." class="w-full p-2 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:border-primary transition-colors duration-200">
                     </div>
                     <div class="flex flex-wrap gap-2 mb-4">
+                        <!-- Botões de categorias de produtos -->
                         <button class="category-btn bg-primary text-white px-3 py-1 rounded-full hover:bg-blue-600 transition-colors duration-200 text-sm">🍏 Frutas</button>
                         <button class="category-btn bg-secondary text-white px-3 py-1 rounded-full hover:bg-green-600 transition-colors duration-200 text-sm">🥕 Legumes</button>
                         <button class="category-btn bg-yellow-500 text-white px-3 py-1 rounded-full hover:bg-yellow-600 transition-colors duration-200 text-sm">🍞 Pães</button>
@@ -169,7 +178,7 @@
                         <button class="category-btn bg-pink-600 text-white px-3 py-1 rounded-full hover:bg-pink-700 transition-colors duration-200 text-sm">🍽️ Outros</button>
                     </div>
                     <ul id="productList" class="space-y-4 max-h-96 overflow-y-auto">
-                        <!-- Product items will be added here dynamically -->
+                        <!-- Os itens da lista de produtos serão adicionados aqui dinamicamente -->
                     </ul>
                     <div class="mt-4 flex justify-between items-center">
                         <span class="text-xl font-semibold">Total:</span>
@@ -178,6 +187,7 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
+                    <!-- Botões de ações da lista de compras -->
                     <button id="applyDiscountBtn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center">
                         <i class="fas fa-percent mr-2"></i>Aplicar Desconto/Acréscimo
                     </button>
@@ -195,6 +205,7 @@
                     </button>
                 </div>
 
+                <!-- Alerta de orçamento -->
                 <div id="budgetAlert" class="hidden bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 animate-fade-in rounded-lg" role="alert">
                     <p class="font-bold">Alerta de Orçamento</p>
                     <p>Você está se aproximando ou ultrapassou o limite do orçamento!</p>
@@ -202,16 +213,18 @@
             </div>
 
             <div class="lg:col-span-1 space-y-6">
+                <!-- Seção do histórico de compras -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
                     <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-history mr-2 text-primary dark:text-secondary"></i>Histórico de Compras</h2>
                     <ul id="purchaseHistory" class="space-y-2 max-h-60 overflow-y-auto">
-                        <!-- Purchase history items will be added here dynamically -->
+                        <!-- Os itens do histórico de compras serão adicionados aqui dinamicamente -->
                     </ul>
                     <button id="clearHistoryBtn" class="mt-4 w-full bg-accent text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200">
                         <i class="fas fa-trash-alt mr-2"></i>Limpar Histórico
                     </button>
                 </div>
 
+                <!-- Seção de análise de gastos -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
                     <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-chart-bar mr-2 text-primary dark:text-secondary"></i>Análise de Gastos</h2>
                     <canvas id="spendingChart" class="w-full h-64"></canvas>
@@ -221,6 +234,7 @@
                     </div>
                 </div>
 
+                <!-- Seção da conta do usuário -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
                     <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-user-circle mr-2 text-primary dark:text-secondary"></i>Conta do Usuário</h2>
                     <div id="userAccountInfo">
@@ -239,7 +253,7 @@
         </div>
     </div>
 
-    <!-- Modal for adding/editing products -->
+    <!-- Modal para adicionar/editar produtos -->
     <div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800 transition-colors duration-200 animate-fade-in">
             <h3 class="text-lg font-semibold mb-4 flex items-center"><i class="fas fa-box mr-2 text-primary dark:text-secondary"></i>Adicionar/Editar Produto</h3>
@@ -263,7 +277,6 @@
                         <option value="Alimentos">Alimentos</option>
                         <option value="Bebidas">Bebidas</option>
                         <option value="Limpeza">Limpeza</option>
-                        <option value="Higiene">Higiene</option>
                         <option value="Hortifruti">Hortifruti</option>
                         <option value="Carnes">Carnes</option>
                         <option value="Laticínios">Laticínios</option>
@@ -278,12 +291,12 @@
         </div>
     </div>
 
-    <!-- Modal for user account -->
+    <!-- Modal para conta do usuário -->
     <div id="userAccountModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800 transition-colors duration-200 animate-fade-in">
             <h3 class="text-lg font-semibold mb-4 flex items-center"><i class="fas fa-user-circle mr-2 text-primary dark:text-secondary"></i>Conta do Usuário</h3>
             <div id="userAccountModalContent">
-                <!-- User account content will be dynamically inserted here -->
+                <!-- Conteúdo da conta do usuário será inserido aqui dinamicamente -->
             </div>
             <button id="closeUserAccountModal" class="mt-4 w-full bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors duration-200">
                 Fechar

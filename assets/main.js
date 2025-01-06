@@ -1,4 +1,3 @@
-
 let products = [];
 let budget = 0;
 let purchaseHistory = [];
@@ -828,9 +827,7 @@ function updateSpendingChart() {
     // Update total spent this month and average spending
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
-    const thisMonthPurchases = purch
-
-aseHistory.filter(p => {
+    const thisMonthPurchases = purchaseHistory.filter(p => {
         const purchaseDate = new Date(p.date);
         return purchaseDate.getMonth() === currentMonth && purchaseDate.getFullYear() === currentYear;
     });
