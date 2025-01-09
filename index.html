@@ -1,309 +1,464 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full dark">
+<html lang="pt-BR" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Market Pro - Seu Assistente de Compras Inteligente</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
     <style>
-        /* Animações para transições */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
         @keyframes slideIn {
-            from { transform: translateY(-20px); opacity: 0; }
+            from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
         .animate-fade-in {
-            animation: fadeIn 0.3s ease-in-out;
+            animation: fadeIn 0.5s ease-out;
         }
         .animate-slide-in {
-            animation: slideIn 0.3s ease-in-out;
+            animation: slideIn 0.5s ease-out;
         }
-        .transition-transform {
-            transition: transform 0.3s ease-in-out;
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+        .animate-shake {
+            animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        #alertContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .alert {
+            margin-bottom: 10px;
         }
     </style>
     <script>
-        // Configuração do Tailwind CSS
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
                     colors: {
-                        primary: '#3498db', // Cor primária
-                        secondary: '#2ecc71', // Cor secundária
-                        accent: '#e74c3c', // Cor de destaque
-                        background: '#ecf0f1', // Cor de fundo
-                        text: '#34495e', // Cor do texto
+                        dark: {
+                            100: '#1E1E2E',
+                            200: '#2A2A3C',
+                            300: '#363648',
+                        },
+                        primary: {
+                            100: '#E6E6FA',
+                            200: '#C3B1E1',
+                            300: '#9F84BD',
+                            400: '#7B5E9A',
+                            500: '#583E7A',
+                            600: '#3C2A54',
+                            700: '#2A1E3A',
+                        },
+                        secondary: {
+                            100: '#FFE4E1',
+                            200: '#FFC0CB',
+                            300: '#FF9AA2',
+                            400: '#FF7A85',
+                            500: '#FF5A67',
+                            600: '#FF3347',
+                            700: '#E60026',
+                        },
+                        accent: {
+                            500: '#8A2BE2',
+                        }
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="h-full bg-background dark:bg-gray-900 text-text dark:text-gray-100 transition-colors duration-200">
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
-        <header class="flex flex-col md:flex-row justify-between items-center mb-8 animate-slide-in">
-            <div class="flex items-center mb-4 md:mb-0">
-                <img src="logo.png" alt="" class="h-16"> <!-- Logo do aplicativo -->
-            </div>
-            <div class="flex items-center space-x-4">
-                <!-- Botão para alternar modo escuro -->
-                <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-600">
-                    <i class="fas fa-moon dark:hidden"></i>
-                    <i class="fas fa-sun hidden dark:inline"></i>
-                </button>
-                <!-- Botão de ajuda -->
-                <button id="helpBtn" class="p-2 rounded-full bg-secondary text-white transition-colors duration-200 hover:bg-green-600">
-                    <i class="fas fa-question"></i>
-                </button>
-                <!-- Botão da conta do usuário -->
-                <button id="userAccountBtn" class="p-2 rounded-full bg-primary text-white transition-colors duration-200 hover:bg-blue-600">
-                    <i class="fas fa-user"></i>
-                </button>
-            </div>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 space-y-6">
-                <!-- Seção para adicionar produtos -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
-                    <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-cart-plus mr-2 text-primary dark:text-secondary"></i>Adicionar Produto</h2>
-                    <form id="quickAddForm" class="flex flex-wrap gap-2">
-                        <input type="text" id="quickAddName" placeholder="Nome do Produto" class="flex-grow p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-                        <input type="number" id="quickAddPrice" placeholder="Preço" class="w-24 p-2 border rounded dark:bg-gray-700 dark:border-gray-600" step="0.01" required>
-                        <input type="number" id="quickAddQuantity" placeholder="Qtd" class="w-20 p-2 border rounded dark:bg-gray-700 dark:border-gray-600" value="1" min="1" required>
-                        <select id="quickAddCategory" class="p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
-                            <option value="">Categoria</option>
-                            <option value="Frutas">🍏 Frutas</option>
-                            <option value="Legumes">🥕 Legumes</option>
-                            <option value="Pães">🍞 Pães</option>
-                            <option value="Ovos">🥚 Ovos</option>
-                            <option value="Laticínios">🧀 Laticínios</option>
-                            <option value="Peixes">🐟 Peixes</option>
-                            <option value="Carnes">🍗 Carnes</option>
-                            <option value="Grãos">🍚 Grãos</option>
-                            <option value="Bebidas">🥛 Bebidas</option>
-                            <option value="Doces">🍰 Doces</option>
-                            <option value="Eletrodomésticos">🥘 Eletrodomésticos</option>
-                            <option value="Celulares">📱 Celulares</option>
-                            <option value="Produtos de Limpeza">🧴 Produtos de Limpeza</option>
-                            <option value="Higiene Pessoal">🧼 Higiene Pessoal</option>
-                            <option value="Utensílios de Cozinha">🍽️ Utensílios de Cozinha</option>
-                            <option value="Limpeza">🧼 Limpeza</option>
-                            <option value="Hortifruti">🌽 Hortifruti</option>
-                            <option value="Outros">🍽️ Outros</option>
-                        </select>
-                        <button type="submit" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-200">
-                            <i class="fas fa-plus mr-2"></i>Adicionar
+<body class="bg-dark-100 text-gray-300 font-sans min-h-screen">
+    <div class="min-h-screen flex flex-col lg:flex-row">
+        <!-- Sidebar para desktop -->
+        <nav id="sidebar" class="bg-dark-200 lg:w-64 lg:flex-shrink-0 transition-all duration-300 ease-in-out hidden lg:block">
+            <div class="flex flex-col items-center justify-between p-4 h-full">
+                <div class="flex flex-col items-center space-y-4 w-full">
+                    <img src="https://via.placeholder.com/50" alt="Logo" class="w-16 h-16 rounded-full mb-4">
+                    <h1 class="text-xl font-bold text-primary-400 text-center mb-8">My Market Pro</h1>
+                    <div class="flex flex-col items-start space-y-4 w-full">
+                        <button class="nav-button w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="home">
+                            <i class="fas fa-home w-6"></i>
+                            <span>Home</span>
                         </button>
-                    </form>
-                </div>
-
-                <!-- Seção da calculadora inteligente -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
-                    <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-calculator mr-2 text-primary dark:text-secondary"></i>Calculadora Inteligente</h2>
-                    <div id="calculator" class="grid grid-cols-4 gap-2">
-                        <input type="text" id="calcDisplay" class="col-span-4 p-2 text-right text-xl bg-gray-100 dark:bg-gray-700 rounded transition-colors duration-200" readonly>
-                        <button class="calc-btn bg-gray-200 dark:bg-gray-600 p-2 rounded transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-500 text-lg font-semibold">7</button>
-                        <button class="calc-btn bg-gray-200 dark:bg-gray-600 p-2 rounded transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-500 text-lg font-semibold">8</button>
-                        <button class="calc-btn bg-gray-200 dark:bg-gray-600 p-2 rounded transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-500 text-lg font-semibold">9</button>
-                        <button class="calc-btn bg-secondary text-white p-2 rounded transition-colors duration-200 hover:bg-green-600 text-lg font-semibold">/</button>
-                        <button class="calc-btn bg-gray-200 dark:bg-gray-600 p-2 rounded transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-500 text-lg font-semibold">4</button>
-                        <button class="calc-btn bg-gray-200 dark:bg-gray-600 p-2 rounded transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-500 text-lg font-semibold">5</button>
-                        <button class="calc-btn bg-gray-200 dark:bg-gray-600 p-2 rounded transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-500 text-lg font-semibold">6</button>
-                        <button class="calc-btn bg-secondary text-white p-2 rounded transition-colors duration-200 hover:bg-green-600 text-lg font-semibold">*</button>
-                        <button class="calc-btn bg-gray-200 dark:bg-gray-600 p-2 rounded transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-500 text-lg font-semibold">1</button>
-                        <button class="calc-btn bg-gray-200 dark:bg-gray-600 p-2 rounded transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-500 text-lg font-semibold">2</button>
-                        <button class="calc-btn bg-gray-200 dark:bg-gray-600 p-2 rounded transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-500 text-lg font-semibold">3</button>
-                        <button class="calc-btn bg-secondary text-white p-2 rounded transition-colors duration-200 hover:bg-green-600 text-lg font-semibold">-</button>
-                        <button class="calc-btn bg-gray-200 dark:bg-gray-600 p-2 rounded transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-500 text-lg font-semibold">0</button>
-                        <button class="calc-btn bg-gray-200 dark:bg-gray-600 p-2 rounded transition-colors duration-200 hover:bg-gray-300 dark:hover:bg-gray-500 text-lg font-semibold">.</button>
-                        <button class="calc-btn bg-primary text-white p-2 rounded transition-colors duration-200 hover:bg-blue-600 text-lg font-semibold">=</button>
-                        <button class="calc-btn bg-secondary text-white p-2 rounded transition-colors duration-200 hover:bg-green-600 text-lg font-semibold">+</button>
-                        <button class="calc-btn col-span-2 bg-accent text-white p-2 rounded transition-colors duration-200 hover:bg-red-600 text-lg font-semibold">C</button>
-                        <button id="addToListBtn" class="col-span-2 bg-primary text-white p-2 rounded transition-colors duration-200 hover:bg-blue-600 text-lg font-semibold">Adicionar à Lista</button>
-                    </div>
-                    <div class="mt-4">
-                        <h3 class="text-lg font-semibold mb-2">Comparação de Preços</h3>
-                        <div class="flex flex-wrap gap-2">
-                            <input type="number" id="priceInput" placeholder="Preço" class="flex-grow p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
-                            <input type="number" id="quantityInput" placeholder="Quantidade" class="flex-grow p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
-                            <select id="unitSelect" class="p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
-                                <option value="unit">Unidade</option>
-                                <option value="kg">Kg</option>
-                                <option value="l">Litro</option>
-                                <option value="g">Grama</option>
-                                <option value="ml">mL</option>
-                            </select>
-                            <button id="compareBtn" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-200">Comparar</button>
-                        </div>
-                        <!-- Resultado da comparação de preços -->
-                        <div id="comparisonResult" class="mt-2 text-sm bg-gray-100 dark:bg-gray-700 p-2 rounded"></div>
+                        <button class="nav-button w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="shopping-list">
+                            <i class="fas fa-shopping-cart w-6"></i>
+                            <span>Lista de Compras</span>
+                        </button>
+                        <button class="nav-button w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="my-list">
+                            <i class="fas fa-list-alt w-6"></i>
+                            <span>Minha Lista</span>
+                        </button>
+                        <button class="nav-button w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="purchase-history">
+                            <i class="fas fa-history w-6"></i>
+                            <span>Histórico</span>
+                        </button>
+                        <button class="nav-button w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="spending-analysis">
+                            <i class="fas fa-chart-bar w-6"></i>
+                            <span>Análise</span>
+                        </button>
                     </div>
                 </div>
-
-                <!-- Seção da lista de compras -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
-                    <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-shopping-cart mr-2 text-primary dark:text-secondary"></i>Lista de Compras</h2>
-                    <div class="mb-4">
-                        <input type="text" id="productSearch" placeholder="Pesquisar produto..." class="w-full p-2 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:border-primary transition-colors duration-200">
-                    </div>
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <!-- Botões de categorias de produtos -->
-                        <button class="category-btn bg-primary text-white px-3 py-1 rounded-full hover:bg-blue-600 transition-colors duration-200 text-sm">🍏 Frutas</button>
-                        <button class="category-btn bg-secondary text-white px-3 py-1 rounded-full hover:bg-green-600 transition-colors duration-200 text-sm">🥕 Legumes</button>
-                        <button class="category-btn bg-yellow-500 text-white px-3 py-1 rounded-full hover:bg-yellow-600 transition-colors duration-200 text-sm">🍞 Pães</button>
-                        <button class="category-btn bg-orange-500 text-white px-3 py-1 rounded-full hover:bg-orange-600 transition-colors duration-200 text-sm">🥚 Ovos</button>
-                        <button class="category-btn bg-accent text-white px-3 py-1 rounded-full hover:bg-red-600 transition-colors duration-200 text-sm">🧀 Laticínios</button>
-                        <button class="category-btn bg-pink-500 text-white px-3 py-1 rounded-full hover:bg-pink-600 transition-colors duration-200 text-sm">🐟 Peixes</button>
-                        <button class="category-btn bg-purple-500 text-white px-3 py-1 rounded-full hover:bg-purple-600 transition-colors duration-200 text-sm">🍗 Carnes</button>
-                        <button class="category-btn bg-indigo-500 text-white px-3 py-1 rounded-full hover:bg-indigo-600 transition-colors duration-200 text-sm">🍚 Grãos</button>
-                        <button class="category-btn bg-blue-500 text-white px-3 py-1 rounded-full hover:bg-blue-600 transition-colors duration-200 text-sm">🥛 Bebidas</button>
-                        <button class="category-btn bg-teal-500 text-white px-3 py-1 rounded-full hover:bg-teal-600 transition-colors duration-200 text-sm">🍰 Doces</button>
-                        <button class="category-btn bg-gray-500 text-white px-3 py-1 rounded-full hover:bg-gray-600 transition-colors duration-200 text-sm">🥘 Eletrodomésticos</button>
-                        <button class="category-btn bg-yellow-600 text-white px-3 py-1 rounded-full hover:bg-yellow-700 transition-colors duration-200 text-sm">📱 Celulares</button>
-                        <button class="category-btn bg-green-500 text-white px-3 py-1 rounded-full hover:bg-green-600 transition-colors duration-200 text-sm">🧴 Produtos de Limpeza</button>
-                        <button class="category-btn bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-600 transition-colors duration-200 text-sm">🧼 Higiene Pessoal</button>
-                        <button class="category-btn bg-indigo-600 text-white px-3 py-1 rounded-full hover:bg-indigo-700 transition-colors duration-200 text-sm">🍽️ Utensílios de Cozinha</button>
-                        <button class="category-btn bg-gray-600 text-white px-3 py-1 rounded-full hover:bg-gray-700 transition-colors duration-200 text-sm">🧼 Limpeza</button>
-                        <button class="category-btn bg-purple-600 text-white px-3 py-1 rounded-full hover:bg-purple-700 transition-colors duration-200 text-sm">🧴 Higiene</button>
-                        <button class="category-btn bg-orange-600 text-white px-3 py-1 rounded-full hover:bg-orange-700 transition-colors duration-200 text-sm">🌽 Hortifruti</button>
-                        <button class="category-btn bg-pink-600 text-white px-3 py-1 rounded-full hover:bg-pink-700 transition-colors duration-200 text-sm">🍽️ Outros</button>
-                    </div>
-                    <ul id="productList" class="space-y-4 max-h-96 overflow-y-auto">
-                        <!-- Os itens da lista de produtos serão adicionados aqui dinamicamente -->
-                    </ul>
-                    <div class="mt-4 flex justify-between items-center">
-                        <span class="text-xl font-semibold">Total:</span>
-                        <span id="totalAmount" class="text-2xl font-bold text-primary dark:text-secondary">R$ 0,00</span>
-                    </div>
-                </div>
-
-                <div class="flex flex-wrap gap-2">
-                    <!-- Botões de ações da lista de compras -->
-                    <button id="applyDiscountBtn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center">
-                        <i class="fas fa-percent mr-2"></i>Aplicar Desconto/Acréscimo
+                <div class="flex space-x-4 mt-auto">
+                    <button id="openUserModal" class="p-2 rounded-full text-gray-400 hover:bg-secondary-500 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-user"></i>
                     </button>
-                    <button id="setBudgetBtn" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors duration-200 flex items-center">
+                    <button id="openHelpModal" class="p-2 rounded-full text-gray-400 hover:bg-secondary-500 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Conteúdo Principal -->
+        <main class="flex-1 p-4 lg:p-8 overflow-y-auto bg-gradient-to-br from-dark-100 to-dark-200 pb-16 lg:pb-0">
+            <!-- Header para mobile -->
+            <header class="lg:hidden flex justify-between items-center mb-6 bg-dark-200 p-4 rounded-xl">
+                <img src="https://via.placeholder.com/50" alt="Logo" class="w-12 h-12 rounded-full">
+                <h1 class="text-xl font-bold text-primary-400">My Market Pro</h1>
+                <div class="flex space-x-2">
+                    <button id="mobileHelpBtn" class="p-2 rounded-full text-gray-400 hover:bg-secondary-500 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                    <button id="mobileUserBtn" class="p-2 rounded-full text-gray-400 hover:bg-secondary-500 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Home -->
+            <section id="home" class="bg-dark-200 rounded-xl shadow-lg p-6 mb-8 animate-fade-in">
+                <h2 class="text-2xl font-semibold mb-4 text-primary-400">Bem-vindo ao My Market Pro</h2>
+                <p class="text-gray-300 mb-4">Gerencie suas compras de forma inteligente e econômica.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-dark-300 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-2 text-primary-300">Resumo</h3>
+                        <p>Itens na lista: <span id="itemCount">0</span></p>
+                        <p>Total estimado: R$ <span id="estimatedTotal">0.00</span></p>
+                        <p>Orçamento: R$ <span id="currentBudget">0.00</span></p>
+                    </div>
+                    <div class="bg-dark-300 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-2 text-primary-300">Ações Rápidas</h3>
+                        <button id="quickAddProduct" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 mr-2 mb-2">
+                            Adicionar Produto
+                        </button>
+                        <button id="quickViewList" class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-4 py-2 rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all duration-200">
+                            Minha Lista
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calculadora Inteligente -->
+            <section id="smart-calculator" class="bg-dark-200 rounded-xl shadow-lg p-6 mb-8 animate-fade-in">
+                <h2 class="text-xl font-semibold mb-4 flex items-center text-primary-400">
+                    <i class="fas fa-calculator mr-2"></i>Calculadora Inteligente
+                </h2>
+                <div id="calculator" class="grid grid-cols-4 gap-2">
+                    <input type="text" id="calcDisplay" class="col-span-4 p-2 text-right text-xl bg-dark-300 text-gray-100 rounded transition-colors duration-200 mb-2" readonly>
+                    <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">7</button>
+                    <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">8</button>
+                    <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">9</button>
+                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold">/</button>
+                    <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">4</button>
+                    <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">5</button>
+                    <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">6</button>
+                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold">*</button>
+                    <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">1</button>
+                    <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">2</button>
+                    <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">3</button>
+                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold">-</button>
+                    <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">0</button>
+                    <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">.</button>
+                    <button class="calc-btn bg-primary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-primary-700 text-lg font-semibold">=</button>
+                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold">+</button>
+                    <button class="calc-btn col-span-2 bg-accent-500 text-white p-4 rounded transition-colors duration-200 hover:bg-accent-600 text-lg font-semibold">C</button>
+                    <button id="addToListBtn" class="col-span-2 bg-primary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-primary-700 text-lg font-semibold">Adicionar à Lista</button>
+                </div>
+            </section>
+
+            <!-- Lista de Compras -->
+            <section id="shopping-list" class="bg-dark-200 rounded-xl shadow-lg p-6 mb-8 animate-fade-in">
+                <h2 class="text-xl font-semibold mb-4 flex items-center text-primary-400">
+                    <i class="fas fa-shopping-cart mr-2"></i>Lista de Compras
+                </h2>
+                <div class="mb-4">
+                    <input type="text" id="product-search" placeholder="Pesquisar produto..." class="w-full p-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400 transition-all duration-200">
+                </div>
+                <ul id="productList" class="space-y-4 max-h-96 overflow-y-auto scrollbar-hide">
+                    <!-- Os itens da lista de produtos serão adicionados aqui dinamicamente -->
+                </ul>
+                <div class="mt-6 flex justify-between items-center">
+                    <span class="text-xl font-semibold text-primary-400">Total:</span>
+                    <span id="totalAmount" class="text-2xl font-bold text-primary-400 bg-dark-300 px-4 py-2 rounded-lg">R$ 0,00</span>
+                </div>
+                <div class="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <button id="applyDiscountBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">
+                        <i class="fas fa-percent mr-2"></i>Aplicar Desconto
+                    </button>
+                    <button id="applyTaxBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">
+                        <i class="fas fa-plus mr-2"></i>Aplicar Acréscimo
+                    </button>
+                    <button id="setBudgetBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">
                         <i class="fas fa-wallet mr-2"></i>Definir Orçamento
                     </button>
-                    <button id="savePurchaseBtn" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors duration-200 flex items-center">
+                    <button id="savePurchaseBtn" class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-4 py-2 rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all duration-200">
                         <i class="fas fa-save mr-2"></i>Salvar Compra
                     </button>
-                    <button id="shareListBtn" class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition-colors duration-200 flex items-center">
+                    <button id="shareListBtn" class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-4 py-2 rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all duration-200">
                         <i class="fas fa-share-alt mr-2"></i>Compartilhar Lista
                     </button>
-                    <button id="exportDataBtn" class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors duration-200 flex items-center">
+                    <button id="exportDataBtn" class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-4 py-2 rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all duration-200">
                         <i class="fas fa-file-export mr-2"></i>Exportar Dados
                     </button>
                 </div>
+            </section>
 
-                <!-- Alerta de orçamento -->
-                <div id="budgetAlert" class="hidden bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 animate-fade-in rounded-lg" role="alert">
-                    <p class="font-bold">Alerta de Orçamento</p>
-                    <p>Você está se aproximando ou ultrapassou o limite do orçamento!</p>
-                </div>
-            </div>
+            <!-- Minha Lista -->
+            <section id="my-list" class="bg-dark-200 rounded-xl shadow-lg p-6 mb-8 animate-fade-in">
+                <h2 class="text-xl font-semibold mb-4 flex items-center text-primary-400">
+                    <i class="fas fa-list-alt mr-2"></i>Minha Lista
+                </h2>
+                <button id="openMyListModal" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 mb-4">
+                    <i class="fas fa-plus mr-2"></i>Adicionar Item
+                </button>
+                <ul id="myListItems" class="space-y-2 max-h-96 overflow-y-auto scrollbar-hide">
+                    <!-- Os itens da minha lista serão adicionados aqui dinamicamente -->
+                </ul>
+            </section>
 
-            <div class="lg:col-span-1 space-y-6">
-                <!-- Seção do histórico de compras -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
-                    <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-history mr-2 text-primary dark:text-secondary"></i>Histórico de Compras</h2>
-                    <ul id="purchaseHistory" class="space-y-2 max-h-60 overflow-y-auto">
-                        <!-- Os itens do histórico de compras serão adicionados aqui dinamicamente -->
-                    </ul>
-                    <button id="clearHistoryBtn" class="mt-4 w-full bg-accent text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200">
-                        <i class="fas fa-trash-alt mr-2"></i>Limpar Histórico
-                    </button>
-                </div>
+            <!-- Histórico de Compras -->
+            <section id="purchase-history" class="bg-dark-200 rounded-xl shadow-lg p-6 mb-8 animate-fade-in">
+                <h2 class="text-xl font-semibold mb-4 flex items-center text-primary-400">
+                    <i class="fas fa-history mr-2"></i>Histórico de Compras
+                </h2>
+                <ul id="purchaseHistory" class="space-y-4 max-h-96 overflow-y-auto scrollbar-hide">
+                    <!-- Os itens do histórico serão adicionados aqui dinamicamente -->
+                </ul>
+            </section>
 
-                <!-- Seção de análise de gastos -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
-                    <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-chart-bar mr-2 text-primary dark:text-secondary"></i>Análise de Gastos</h2>
-                    <canvas id="spendingChart" class="w-full h-64"></canvas>
-                    <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                        <p>Total gasto este mês: <span id="monthTotal" class="font-semibold"></span></p>
-                        <p>Média de gastos por compra: <span id="averageSpending" class="font-semibold"></span></p>
+            <!-- Análise de Gastos -->
+            <section id="spending-analysis" class="bg-dark-200 rounded-xl shadow-lg p-6 animate-fade-in">
+                <h2 class="text-xl font-semibold mb-4 flex items-center text-primary-400">
+                    <i class="fas fa-chart-bar mr-2"></i>Análise de Gastos
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-dark-300 p-4 rounded-lg">
+                        <canvas id="spendingChart" class="w-full h-64"></canvas>
+                    </div>
+                    <div class="bg-dark-300 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-2 text-primary-400">Resumo de Gastos</h3>
+                        <ul id="spendingSummary" class="space-y-2">
+                            <!-- O resumo de gastos será adicionado aqui dinamicamente -->
+                        </ul>
                     </div>
                 </div>
+            </section>
+        </main>
 
-                <!-- Seção da conta do usuário -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200 animate-fade-in">
-                    <h2 class="text-xl font-semibold mb-4 flex items-center"><i class="fas fa-user-circle mr-2 text-primary dark:text-secondary"></i>Conta do Usuário</h2>
-                    <div id="userAccountInfo">
-                        <p><strong>Nome:</strong> <span id="userName">Carregando...</span></p>
-                        <p><strong>Email:</strong> <span id="userEmail">Carregando...</span></p>
-                        <p><strong>Plano:</strong> <span id="userPlan">Carregando...</span></p>
-                    </div>
-                    <button id="editProfileBtn" class="mt-4 w-full bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200">
-                        <i class="fas fa-edit mr-2"></i>Editar Perfil
-                    </button>
-                    <button id="upgradeAccountBtn" class="mt-2 w-full bg-secondary text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-200">
-                        <i class="fas fa-arrow-up mr-2"></i>Atualizar Conta
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para adicionar/editar produtos -->
-    <div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800 transition-colors duration-200 animate-fade-in">
-            <h3 class="text-lg font-semibold mb-4 flex items-center"><i class="fas fa-box mr-2 text-primary dark:text-secondary"></i>Adicionar/Editar Produto</h3>
-            <form id="productForm">
-                <input type="hidden" id="productId">
-                <div class="mb-4">
-                    <label for="productName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome do Produto</label>
-                    <input type="text" id="productName" name="productName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 transition-colors duration-200">
-                </div>
-                <div class="mb-4">
-                    <label for="productPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Preço Unitário</label>
-                    <input type="number" id="productPrice" name="productPrice" step="0.01" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 transition-colors duration-200">
-                </div>
-                <div class="mb-4">
-                    <label for="productQuantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantidade</label>
-                    <input type="number" id="productQuantity" name="productQuantity" min="1" value="1" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 transition-colors duration-200">
-                </div>
-                <div class="mb-4">
-                    <label for="productCategory" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Categoria</label>
-                    <select id="productCategory" name="productCategory" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 transition-colors duration-200">
-                        <option value="Alimentos">Alimentos</option>
-                        <option value="Bebidas">Bebidas</option>
-                        <option value="Limpeza">Limpeza</option>
-                        <option value="Hortifruti">Hortifruti</option>
-                        <option value="Carnes">Carnes</option>
-                        <option value="Laticínios">Laticínios</option>
-                        <option value="Outros">Outros</option>
-                    </select>
-                </div>
-                <div class="flex justify-end">
-                    <button type="button" id="closeModal" class="mr-2 px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors duration-200">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-600 transition-colors duration-200">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal para conta do usuário -->
-    <div id="userAccountModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800 transition-colors duration-200 animate-fade-in">
-            <h3 class="text-lg font-semibold mb-4 flex items-center"><i class="fas fa-user-circle mr-2 text-primary dark:text-secondary"></i>Conta do Usuário</h3>
-            <div id="userAccountModalContent">
-                <!-- Conteúdo da conta do usuário será inserido aqui dinamicamente -->
-            </div>
-            <button id="closeUserAccountModal" class="mt-4 w-full bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors duration-200">
-                Fechar
+        <!-- Navegação inferior para mobile -->
+        <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-dark-200 p-2 flex justify-around items-center">
+            <button class="nav-button p-2 rounded-full text-gray-400 hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="home">
+                <i class="fas fa-home"></i>
             </button>
+            <button class="nav-button p-2 rounded-full text-gray-400 hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="shopping-list">
+                <i class="fas fa-shopping-cart"></i>
+            </button>
+            <button class="nav-button p-2 rounded-full text-gray-400 hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="my-list">
+                <i class="fas fa-list-alt"></i>
+            </button>
+            <button class="nav-button p-2 rounded-full text-gray-400 hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="purchase-history">
+                <i class="fas fa-history"></i>
+            </button>
+            <button class="nav-button p-2 rounded-full text-gray-400 hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="spending-analysis">
+                <i class="fas fa-chart-bar"></i>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Modais -->
+    <div id="addProductModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-dark-200 p-6 rounded-xl max-w-md w-full animate-slide-in">
+            <h3 class="text-xl font-semibold mb-4 text-primary-400">Adicionar Produto</h3>
+            <form id="addProductForm">
+                <input type="text" name="name" placeholder="Nome do Produto" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400">
+                <input type="number" name="price" placeholder="Preço" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400" step="0.01">
+                <input type="number" name="quantity" placeholder="Quantidade" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400" value="1" min="1">
+                <select name="category" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400">
+                    <option value="">Categoria</option>
+                    <option value="Frutas">🍏 Frutas</option>
+                    <option value="Legumes">🥕 Legumes</option>
+                    <option value="Pães">🍞 Pães</option>
+                    <option value="Laticínios">🧀 Laticínios</option>
+                    <option value="Carnes">🍗 Carnes</option>
+                    <option value="Bebidas">🥤 Bebidas</option>
+                    <option value="Limpeza">🧼 Limpeza</option>
+                    <option value="Higiene">🧴 Higiene</option>
+                    <option value="Outros">🛒 Outros</option>
+                </select>
+                <button type="submit" class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">Adicionar</button>
+            </form>
+            <button class="close-modal mt-4 text-gray-400 hover:text-white transition-colors duration-200">Fechar</button>
         </div>
     </div>
 
-  <script src="assets/main.js"></script>
+    <div id="myListModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-dark-200 p-6 rounded-xl max-w-md w-full animate-slide-in">
+            <h3 class="text-xl font-semibold mb-4 text-primary-400">Adicionar à Minha Lista</h3>
+            <form id="myListForm">
+                <input type="text" name="name" placeholder="Nome do Produto" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400">
+                <input type="number" name="quantity" placeholder="Quantidade" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400" value="1" min="1">
+                <select name="category" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400">
+                    <option value="">Categoria</option>
+                    <option value="Frutas">🍏 Frutas</option>
+                    <option value="Legumes">🥕 Legumes</option>
+                    <option value="Pães">🍞 Pães</option>
+                    <option value="Laticínios">🧀 Laticínios</option>
+                    <option value="Carnes">🍗 Carnes</option>
+                    <option value="Bebidas">🥤 Bebidas</option>
+                    <option value="Limpeza">🧼 Limpeza</option>
+                    <option value="Higiene">🧴 Higiene</option>
+                    <option value="Outros">🛒 Outros</option>
+                </select>
+                <button type="submit" class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">Adicionar</button>
+            </form>
+            <button class="close-modal mt-4 text-gray-400 hover:text-white transition-colors duration-200">Fechar</button>
+        </div>
+    </div>
+
+    <div id="budgetModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-dark-200 p-6 rounded-xl max-w-md w-full animate-slide-in">
+            <h3 class="text-xl font-semibold mb-4 text-primary-400">Definir Orçamento</h3>
+            <form id="budgetForm">
+                <input type="number" name="budget" placeholder="Valor do Orçamento" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400" step="0.01">
+                <button type="submit" class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">Definir</button>
+            </form>
+            <button class="close-modal mt-4 text-gray-400 hover:text-white transition-colors duration-200">Fechar</button>
+        </div>
+    </div>
+
+    <div id="discountModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-dark-200 p-6 rounded-xl max-w-md w-full animate-slide-in">
+            <h3 class="text-xl font-semibold mb-4 text-primary-400">Aplicar Desconto</h3>
+            <form id="discountForm">
+                <input type="number" name="discount" placeholder="Valor do Desconto (%)" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400" step="0.01">
+                <button type="submit" class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">Aplicar</button>
+            </form>
+            <button class="close-modal mt-4 text-gray-400 hover:text-white transition-colors duration-200">Fechar</button>
+        </div>
+    </div>
+
+    <div id="taxModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-dark-200 p-6 rounded-xl max-w-md w-full animate-slide-in">
+            <h3 class="text-xl font-semibold mb-4 text-primary-400">Aplicar Acréscimo</h3>
+            <form id="taxForm">
+                <input type="number" name="tax" placeholder="Valor do Acréscimo (%)" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400" step="0.01">
+                <button type="submit" class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">Aplicar</button>
+            </form>
+            <button class="close-modal mt-4 text-gray-400 hover:text-white transition-colors duration-200">Fechar</button>
+        </div>
+    </div>
+
+    <div id="shareModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-dark-200 p-6 rounded-xl max-w-md w-full animate-slide-in">
+            <h3 class="text-xl font-semibold mb-4 text-primary-400">Compartilhar Lista</h3>
+            <textarea id="shareText" class="w-full h-40 p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400" readonly></textarea>
+            <button id="copyShareTextBtn" class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">Copiar</button>
+            <button class="close-modal mt-4 text-gray-400 hover:text-white transition-colors duration-200">Fechar</button>
+        </div>
+    </div>    <div id="exportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-dark-200 p-6 rounded-xl max-w-md w-full animate-slide-in">
+            <h3 class="text-xl font-semibold mb-4 text-primary-400">Exportar Dados</h3>
+            <p class="mb-4">Escolha o formato de exportação:</p>
+            <button id="exportExcelBtn" class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 mb-2">Exportar para Excel</button>
+            <button id="exportJSONBtn" class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">Exportar para JSON</button>
+            <button class="close-modal mt-4 text-gray-400 hover:text-white transition-colors duration-200">Fechar</button>
+        </div>
+    </div>
+
+    <div id="helpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-dark-200 p-6 rounded-xl max-w-md w-full animate-slide-in">
+            <h3 class="text-xl font-semibold mb-4 text-primary-400">Ajuda</h3>
+            <p class="mb-4">Bem-vindo ao My Market Pro! Aqui estão algumas dicas para usar o app:</p>
+            <ul class="list-disc pl-5 mb-4 space-y-2">
+                <li>Adicione produtos à sua lista de compras usando o formulário no topo</li>
+                <li>Use a barra de pesquisa para encontrar produtos rapidamente</li>
+                <li>Filtre produtos por categoria usando os botões coloridos</li>
+                <li>Defina um orçamento para controlar seus gastos</li>
+                <li>Aplique descontos ou acréscimos em sua compra</li>
+                <li>Salve suas compras no histórico para análise futura</li>
+                <li>Compartilhe sua lista de compras com amigos e família</li>
+                <li>Visualize suas estatísticas de gastos no gráfico</li>
+            </ul>
+            <p>Aproveite sua experiência de compras inteligente!</p>
+            <button class="close-modal mt-4 bg-secondary-600 text-white px-4 py-2 rounded hover:bg-secondary-700 transition-colors duration-200">Fechar</button>
+        </div>
+    </div>
+
+    <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-dark-200 p-6 rounded-xl max-w-md w-full animate-slide-in">
+            <h3 class="text-xl font-semibold mb-4 text-primary-400">Conta do Usuário</h3>
+            <div class="mb-4">
+                <h4 class="font-semibold mb-2">Informações da Conta</h4>
+                <p><strong>Nome:</strong> Usuário Exemplo</p>
+                <p><strong>Email:</strong> usuario@exemplo.com</p>
+                <p><strong>Plano:</strong> Básico</p>
+            </div>
+            <div class="mb-4">
+                <h4 class="font-semibold mb-2">Configurações da Conta</h4>
+                <button class="bg-primary-600 text-white px-4 py-2 rounded mb-2 hover:bg-primary-700 transition-colors duration-200 w-full">Alterar Senha</button>
+                <button class="bg-primary-600 text-white px-4 py-2 rounded mb-2 hover:bg-primary-700 transition-colors duration-200 w-full">Configurações de Notificação</button>
+                <button class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 transition-colors duration-200 w-full">Configurações de Privacidade</button>
+            </div>
+            <div class="mb-4">
+                <h4 class="font-semibold mb-2">Suporte</h4>
+                <button class="bg-secondary-600 text-white px-4 py-2 rounded hover:bg-secondary-700 transition-colors duration-200 w-full">Contatar Suporte</button>
+            </div>
+            <button class="close-modal mt-4 bg-accent-500 text-white px-4 py-2 rounded hover:bg-accent-600 transition-colors duration-200 w-full">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer" class="fixed top-4 right-4 z-50"></div>
+
+    <div id="purchaseModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-dark-200 p-6 rounded-xl max-w-md w-full animate-slide-in">
+            <h3 class="text-xl font-semibold mb-4 text-primary-400">Detalhes da Compra</h3>
+            <div id="purchaseDetails"></div>
+            <button class="close-modal mt-4 text-gray-400 hover:text-white transition-colors duration-200">Fechar</button>
+        </div>
+    </div>
+
+   
 </body>
 </html>
+
