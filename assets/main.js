@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos do DOM
     const sidebar = document.getElementById('sidebar');
@@ -20,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const addProductForm = document.getElementById('addProductForm');
     const myListForm = document.getElementById('myListForm');
     const myListItems = document.getElementById('myListItems');
+    const myListModalItems = document.getElementById('myListModalItems');
     const budgetForm = document.getElementById('budgetForm');
     const discountForm = document.getElementById('discountForm');
     const taxForm = document.getElementById('taxForm');
@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const openMyListModal = document.getElementById('openMyListModal');
     const purchaseModal = document.getElementById('purchaseModal');
 
-
     // Estado
     let products = JSON.parse(localStorage.getItem('products')) || [];
     let myList = JSON.parse(localStorage.getItem('myList')) || [];
@@ -48,14 +47,19 @@ document.addEventListener('DOMContentLoaded', function() {
     let budget = parseFloat(localStorage.getItem('budget')) || 0;
     let currentTotal = 0;
 
-
     // Navegação
     navButtons.forEach(button => {
         button.addEventListener('click', () => {
             const target = button.dataset.target;
-            sections.forEach(section => {
-                section.classList.toggle('hidden', section.id !== target);
-            });
+            if (target === 'home') {
+                sections.forEach(section => {
+                    section.classList.remove('hidden');
+                });
+            } else {
+                sections.forEach(section => {
+                    section.classList.toggle('hidden', section.id !== target);
+                });
+            }
         });
     });
 
@@ -109,22 +113,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateMyList() {
         myListItems.innerHTML = '';
+        myListModalItems.innerHTML = '';
         myList.forEach((item, index) => {
-            const li = document.createElement('li');
-            li.className = 'flex items-center justify-between bg-dark-300 p-2 rounded-lg';
-            li.innerHTML = `
-                <div class="flex items-center">
-                    <input type="checkbox" class="mr-2" ${item.checked ? 'checked' : ''} data-index="${index}">
-                    <span class="text-lg mr-2">${item.emoji}</span>
-                    <span>${item.name} (${item.quantity}x)</span>
-                </div>
+            const li = createMyListItem(item, index);
+            myListItems.appendChild(li.cloneNode(true));
+            myListModalItems.appendChild(li);
+        });
+        saveToLocalStorage();
+    }
+
+    function createMyListItem(item, index) {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between bg-dark-300 p-2 rounded-lg';
+        li.innerHTML = `
+            <div class="flex items-center">
+                <input type="checkbox" class="mr-2" ${item.checked ? 'checked' : ''} data-index="${index}">
+                <span class="text-lg mr-2">${item.emoji}</span>
+                <span>${item.name} (${item.quantity}x)</span>
+            </div>
+            <div class="flex items-center">
+                <button class="text-primary-400 hover:text-primary-600 mr-2 add-to-shopping-list" data-index="${index}">
+                    <i class="fas fa-cart-plus"></i>
+                </button>
                 <button class="text-red-500 hover:text-red-700 remove-item" data-index="${index}">
                     <i class="fas fa-trash"></i>
                 </button>
-            `;
-            myListItems.appendChild(li);
-        });
-        saveToLocalStorage();
+            </div>
+        `;
+        return li;
     }
 
     function updatePurchaseHistory() {
@@ -283,16 +299,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    myListItems.addEventListener('click', (e) => {
-        const button = e.target.closest('button');
-        if (!button) return;
+    myListItems.addEventListener('click', handleMyListItemClick);
+    myListModalItems.addEventListener('click', handleMyListItemClick);
 
-        const index = button.dataset.index;
-        if (index !== undefined) {
+    function handleMyListItemClick(e) {
+        const checkbox = e.target.closest('input[type="checkbox"]');
+        const addToShoppingListBtn = e.target.closest('.add-to-shopping-list');
+        const removeItemBtn = e.target.closest('.remove-item');
+
+        if (checkbox) {
+            const index = checkbox.dataset.index;
+            myList[index].checked = checkbox.checked;
+            saveToLocalStorage();
+            updateMyList();
+        } else if (addToShoppingListBtn) {
+            const index = addToShoppingListBtn.dataset.index;
+            const item = myList[index];
+            addProductToList({
+                name: { value: item.name },
+                price: { value: 0 },
+                quantity: { value: item.quantity },
+                category: { value: item.category, selectedOptions: [{ textContent: item.emoji + ' ' + item.category }] }
+            });
+            showAlert('Item adicionado à lista de compras!', 'success');
+        } else if (removeItemBtn) {
+            const index = removeItemBtn.dataset.index;
             myList.splice(index, 1);
             updateMyList();
+            showAlert('Item removido da sua lista!', 'success');
         }
-    });
+    }
 
     purchaseHistory.addEventListener('click', (e) => {
         const viewDetailsBtn = e.target.closest('.view-details');
@@ -521,36 +557,37 @@ document.addEventListener('DOMContentLoaded', function() {
     budgetForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const newBudget = parseFloat(budgetForm.budget.value);
-        if (!isNaN(newBudget) && newBudget > 0) {
+        if (!isNaN(newBudget) && newBudget >= 0) {
             budget = newBudget;
-            saveToLocalStorage();
             updateProductList();
-            showAlert(`Orçamento definido: R$ ${budget.toFixed(2)}`, 'success');
             closeModal(budgetModal);
+            showAlert('Orçamento definido com sucesso!', 'success');
         } else {
-            showAlert('Por favor, insira um valor válido para o orçamento.', 'error');
+            showAlert('Por favor, insira um valor numérico válido.', 'error');
         }
     });
 
     discountForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const discountPercentage = parseFloat(discountForm.discount.value);
-        if (!isNaN(discountPercentage) && discountPercentage > 0 && discountPercentage <= 100) {
+        if (!isNaN(discountPercentage) && discountPercentage >= 0 && discountPercentage <= 100) {
             applyDiscount(discountPercentage);
             closeModal(discountModal);
+            showAlert('Desconto aplicado com sucesso!', 'success');
         } else {
-            showAlert('Por favor, insira uma porcentagem de desconto válida (entre 0 e 100).', 'error');
+            showAlert('Por favor, insira um valor percentual válido entre 0 e 100.', 'error');
         }
     });
 
     taxForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const taxPercentage = parseFloat(taxForm.tax.value);
-        if (!isNaN(taxPercentage) && taxPercentage > 0) {
+        if (!isNaN(taxPercentage) && taxPercentage >= 0) {
             applyTax(taxPercentage);
             closeModal(taxModal);
+            showAlert('Acréscimo aplicado com sucesso!', 'success');
         } else {
-            showAlert('Por favor, insira uma porcentagem de acréscimo válida (maior que 0).', 'error');
+            showAlert('Por favor, insira um valor percentual válido.', 'error');
         }
     });
 
@@ -559,7 +596,6 @@ document.addEventListener('DOMContentLoaded', function() {
             product.price -= (product.price * (percentage / 100));
         });
         updateProductList();
-        showAlert(`Desconto de ${percentage}% aplicado com sucesso!`, 'success');
     }
 
     function applyTax(percentage) {
@@ -567,7 +603,6 @@ document.addEventListener('DOMContentLoaded', function() {
             product.price += (product.price * (percentage / 100));
         });
         updateProductList();
-        showAlert(`Acréscimo de ${percentage}% aplicado com sucesso!`, 'success');
     }
 
     function checkBudget(total) {
@@ -576,8 +611,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initialize
+    // Inicialização
     updateProductList();
+    updateMyList();
     updatePurchaseHistory();
     updateSpendingChart();
 });
