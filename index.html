@@ -19,6 +19,194 @@
         .hidden {
           display: none;
         }
+
+        /* Glass Effect e Neumorfismo Base */
+        .glass-effect {
+            background: rgba(30, 30, 46, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .neumorph {
+            background: linear-gradient(145deg, rgba(42, 42, 60, 0.6), rgba(30, 30, 46, 0.6));
+            box-shadow: 
+                8px 8px 16px rgba(0, 0, 0, 0.25),
+                -8px -8px 16px rgba(255, 255, 255, 0.03);
+        }
+
+        .neumorph-inset {
+            background: linear-gradient(145deg, rgba(30, 30, 46, 0.6), rgba(42, 42, 60, 0.6));
+            box-shadow: 
+                inset 5px 5px 10px rgba(0, 0, 0, 0.2),
+                inset -5px -5px 10px rgba(255, 255, 255, 0.05);
+        }
+
+        /* Animações Aprimoradas */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(88, 62, 122, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(88, 62, 122, 0.8); }
+        }
+
+        .glow-animation {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        /* Tooltips Modernos */
+        .tooltip-modern {
+            position: relative;
+        }
+
+        .tooltip-modern:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            padding: 8px 12px;
+            background: rgba(30, 30, 46, 0.95);
+            color: white;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tooltip-modern:hover:before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Interatividade Melhorada */
+        .interactive-hover {
+            transition: all 0.3s ease;
+        }
+
+        .interactive-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 10px 20px rgba(0, 0, 0, 0.2),
+                0 6px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Cards e Seções */
+        .card-modern {
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .card-modern:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Botões Modernos */
+        .btn-modern {
+            background: linear-gradient(135deg, var(--tw-gradient-from), var(--tw-gradient-to));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Loading States */
+        .loading-shimmer {
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Estilo para a barra de navegação mobile */
+        .nav-button {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Efeito de glow para o botão de adicionar */
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 90, 103, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 90, 103, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 90, 103, 0);
+            }
+        }
+
+        #mobileAddBtn {
+            animation: pulse-glow 2s infinite;
+        }
+
+        /* Ajuste para o padding bottom do conteúdo principal em mobile */
+        @media (max-width: 1024px) {
+            main {
+                padding-bottom: 5rem;
+            }
+        }
+
+        /* Adicionar ao seu CSS existente */
+        .nav-button.active {
+            @apply text-primary-400 bg-primary-600/20;
+        }
+
+        /* Efeito de ripple para feedback tátil */
+        .nav-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            transform: scale(0);
+            opacity: 0;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+
+        .nav-button:active::after {
+            transform: scale(2);
+            opacity: 1;
+            transition: 0s;
+        }
+
+        /* Melhorar acessibilidade com focus visible */
+        .nav-button:focus-visible {
+            @apply outline-none ring-2 ring-primary-400 ring-offset-2 ring-offset-dark-200;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -64,7 +252,7 @@
 <body class="bg-dark-100 text-gray-300 font-sans min-h-screen">
     <div class="min-h-screen flex flex-col lg:flex-row">
         <!-- Sidebar para desktop -->
-        <nav id="sidebar" class="bg-dark-200 lg:w-64 lg:flex-shrink-0 transition-all duration-300 ease-in-out hidden lg:block">
+        <nav id="sidebar" class="hidden lg:block glass-effect neumorph lg:w-64 lg:flex-shrink-0">
             <div class="flex flex-col items-center justify-between p-4 h-full">
                 <div class="flex flex-col items-center space-y-4 w-full">
                     <img src="logo.png" alt="Logo" class="w-16 h-16 rounded-full mb-4">
@@ -120,24 +308,28 @@
             </header>
 
             <!-- Home -->
-            <section id="home" class="bg-dark-200 rounded-xl shadow-lg p-6 mb-8 animate-fade-in">
+            <section id="home" class="glass-effect neumorph card-modern p-6 mb-8">
                 <h2 class="text-2xl font-semibold mb-4 text-primary-400">Bem-vindo ao My Market Pro</h2>
                 <p class="text-gray-300 mb-4">Gerencie suas compras de forma inteligente e econômica.</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-dark-300 p-4 rounded-lg">
+                    <div class="glass-effect neumorph-inset p-4 rounded-lg interactive-hover">
                         <h3 class="text-lg font-semibold mb-2 text-primary-300">Resumo</h3>
                         <p>Itens na lista: <span id="itemCount">0</span></p>
                         <p>Total estimado: R$ <span id="estimatedTotal">0.00</span></p>
                         <p>Orçamento: R$ <span id="currentBudget">0.00</span></p>
                     </div>
-                    <div class="bg-dark-300 p-4 rounded-lg">
+                    <div class="glass-effect neumorph-inset p-4 rounded-lg interactive-hover">
                         <h3 class="text-lg font-semibold mb-2 text-primary-300">Ações Rápidas</h3>
-                        <button id="quickAddProduct" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 mr-2 mb-2">
-                            Adicionar Produto
-                        </button>
-                        <button id="quickViewList" class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-4 py-2 rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all duration-200">
-                            Minha Lista
-                        </button>
+                        <div class="flex gap-2">
+                            <button id="quickAddProduct" class="btn-modern tooltip-modern interactive-hover bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200" data-tooltip="Adicionar novo produto">
+                                <i class="fas fa-plus mr-2"></i>
+                                <span>Adicionar Produto</span>
+                            </button>
+                            <button id="quickViewList" class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-4 py-2 rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all duration-200">
+                                <i class="fas fa-list mr-2"></i>
+                                Minha Lista
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -176,7 +368,7 @@
                     <i class="fas fa-shopping-cart mr-2"></i>Lista de Compras
                 </h2>
                 <div class="mb-4">
-                    <input type="text" id="product-search" placeholder="Pesquisar produto..." class="w-full p-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400 transition-all duration-200">
+                    <input type="text" id="product-search" placeholder="Pesquisar produto..." class="neumorph-inset glass-effect w-full p-3 rounded-lg focus:ring-2 focus:ring-primary-400 transition-all duration-200">
                 </div>
                 <ul id="productList" class="space-y-4 max-h-96 overflow-y-auto scrollbar-hide">
                     <!-- Os itens da lista de produtos serão adicionados aqui dinamicamente -->
@@ -250,22 +442,44 @@
         </main>
 
         <!-- Navegação inferior para mobile -->
-        <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-dark-200 p-2 flex justify-around items-center">
-            <button class="nav-button p-2 rounded-full text-gray-400 hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="home">
-                <i class="fas fa-home"></i>
-            </button>
-            <button class="nav-button p-2 rounded-full text-gray-400 hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="shopping-list">
-                <i class="fas fa-shopping-cart"></i>
-            </button>
-            <button class="nav-button p-2 rounded-full text-gray-400 hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="my-list">
-                <i class="fas fa-list-alt"></i>
-            </button>
-            <button class="nav-button p-2 rounded-full text-gray-400 hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="purchase-history">
-                <i class="fas fa-history"></i>
-            </button>
-            <button class="nav-button p-2 rounded-full text-gray-400 hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="spending-analysis">
-                <i class="fas fa-chart-bar"></i>
-            </button>
+        <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-dark-200/80 backdrop-blur-lg p-2 border-t border-gray-700/30">
+            <div class="flex items-center justify-center w-full max-w-md mx-auto relative px-4">
+                <!-- Container principal dos ícones -->
+                <div class="flex justify-between items-center w-full relative">
+                    <!-- Ícones da esquerda -->
+                    <div class="flex items-center gap-8 mr-12">
+                        <button class="nav-button group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" data-target="home">
+                            <i class="fas fa-home text-xl mb-1"></i>
+                            <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Home</span>
+                        </button>
+                        <button class="nav-button group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" data-target="shopping-list">
+                            <i class="fas fa-shopping-cart text-xl mb-1"></i>
+                            <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Lista</span>
+                        </button>
+                    </div>
+
+                    <!-- Botão central de adicionar -->
+                    <div class="absolute left-1/2 -translate-x-1/2 -translate-y-6 z-20">
+                        <button id="mobileAddBtn" class="w-14 h-14 rounded-full bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-lg hover:shadow-secondary-500/50 active:scale-95 transition-all duration-200 flex items-center justify-center transform hover:scale-110 hover:rotate-180">
+                            <i class="fas fa-plus text-xl"></i>
+                            <span class="sr-only">Adicionar Produto</span>
+                        </button>
+                        <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-16 h-16 bg-gradient-to-r from-secondary-500/20 to-secondary-600/20 rounded-full blur-xl -z-10"></div>
+                    </div>
+
+                    <!-- Ícones da direita -->
+                    <div class="flex items-center gap-8 ml-12">
+                        <button class="nav-button group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" data-target="purchase-history">
+                            <i class="fas fa-history text-xl mb-1"></i>
+                            <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Histórico</span>
+                        </button>
+                        <button class="nav-button group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" data-target="spending-analysis">
+                            <i class="fas fa-chart-bar text-xl mb-1"></i>
+                            <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Análise</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </nav>
     </div>
 
@@ -430,6 +644,77 @@
     </div>
 
     <script src="assets/main.js"></script>
+
+    <script>
+        // Botões mobile
+        const mobileHelpBtn = document.getElementById('mobileHelpBtn');
+        const mobileUserBtn = document.getElementById('mobileUserBtn');
+        
+        // Modais
+        const helpModal = document.getElementById('helpModal');
+        const userModal = document.getElementById('userModal');
+        
+        // Event listeners para botões mobile
+        mobileHelpBtn.addEventListener('click', () => {
+            helpModal.classList.remove('hidden');
+            helpModal.classList.add('flex');
+        });
+        
+        mobileUserBtn.addEventListener('click', () => {
+            userModal.classList.remove('hidden');
+            userModal.classList.add('flex');
+        });
+        
+        // Fechar modais
+        document.querySelectorAll('.close-modal').forEach(button => {
+            button.addEventListener('click', () => {
+                helpModal.classList.add('hidden');
+                helpModal.classList.remove('flex');
+                userModal.classList.add('hidden');
+                userModal.classList.remove('flex');
+            });
+        });
+        
+        // Fechar modal ao clicar fora
+        [helpModal, userModal].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            });
+        });
+
+        // Botão de adicionar mobile
+        const mobileAddBtn = document.getElementById('mobileAddBtn');
+        const addProductModal = document.getElementById('addProductModal');
+
+        mobileAddBtn.addEventListener('click', () => {
+            addProductModal.classList.remove('hidden');
+            addProductModal.classList.add('flex');
+        });
+
+        // Gerenciar estado ativo dos botões
+        const navButtons = document.querySelectorAll('.nav-button');
+        
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+
+        // Adicionar haptic feedback em dispositivos que suportam
+        function triggerHapticFeedback() {
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        }
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', triggerHapticFeedback);
+        });
+    </script>
 
 </body>
 </html>
