@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const quickViewList = document.getElementById('quickViewList');
     const openMyListModal = document.getElementById('openMyListModal');
     const purchaseModal = document.getElementById('purchaseModal');
+    const editProductModal = document.getElementById('editProductModal');
+    const editProductForm = document.getElementById('editProductForm');
 
     // Estado
     let products = JSON.parse(localStorage.getItem('products')) || [];
@@ -103,12 +105,93 @@ document.addEventListener('DOMContentLoaded', function() {
                         <i class="fas fa-plus-circle"></i>
                     </button>
                 </div>
+                <button class="text-gray-400 hover:text-primary-400 transition-colors duration-200 edit-product" data-index="${index}">
+                    <i class="fas fa-edit"></i>
+                </button>
                 <button class="text-gray-400 hover:text-red-500 transition-colors duration-200 remove-product" data-index="${index}">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
         `;
         return li;
+    }
+
+    function createMyListItem(item, index) {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between bg-dark-300 p-3 rounded-lg hover:bg-dark-100 transition-all duration-200 cursor-pointer';
+        li.dataset.index = index;
+        li.innerHTML = `
+            <div class="flex items-center flex-1">
+                <input type="checkbox" class="mr-2 cursor-pointer" ${item.checked ? 'checked' : ''} data-index="${index}">
+                <div class="flex items-center flex-1" data-action="edit">
+                    <span class="text-lg mr-2">${item.emoji}</span>
+                    <span class="flex-1">${item.name} (${item.quantity}x)</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button class="text-gray-400 hover:text-primary-400 transition-colors duration-200 edit-list-item p-1" data-index="${index}" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="text-gray-400 hover:text-primary-400 transition-colors duration-200 add-to-shopping-list p-1" data-index="${index}" title="Adicionar à Lista de Compras">
+                    <i class="fas fa-cart-plus"></i>
+                </button>
+                <button class="text-gray-400 hover:text-red-500 transition-colors duration-200 remove-item p-1" data-index="${index}" title="Remover">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+
+        li.addEventListener('click', (e) => {
+            if (!e.target.closest('button') && !e.target.closest('input[type="checkbox"]')) {
+                openEditListItemModal(index);
+            }
+        });
+
+        const buttons = li.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        });
+
+        const checkbox = li.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        return li;
+    }
+
+    function setupListItemEvents() {
+        document.querySelectorAll('#myListItems input[type="checkbox"], #myListModalItems input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const index = parseInt(e.target.dataset.index);
+                myList[index].checked = e.target.checked;
+                updateMyList();
+            });
+        });
+
+        document.querySelectorAll('.edit-list-item').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const index = parseInt(e.target.closest('[data-index]').dataset.index);
+                openEditListItemModal(index);
+            });
+        });
+
+        document.querySelectorAll('.add-to-shopping-list').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const index = parseInt(e.target.closest('[data-index]').dataset.index);
+            });
+        });
+
+        document.querySelectorAll('.remove-item').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const index = parseInt(e.target.closest('[data-index]').dataset.index);
+                myList.splice(index, 1);
+                updateMyList();
+                showAlert('Item removido com sucesso!', 'success');
+            });
+        });
     }
 
     function updateMyList() {
@@ -119,28 +202,8 @@ document.addEventListener('DOMContentLoaded', function() {
             myListItems.appendChild(li.cloneNode(true));
             myListModalItems.appendChild(li);
         });
+        setupListItemEvents();
         saveToLocalStorage();
-    }
-
-    function createMyListItem(item, index) {
-        const li = document.createElement('li');
-        li.className = 'flex items-center justify-between bg-dark-300 p-2 rounded-lg';
-        li.innerHTML = `
-            <div class="flex items-center">
-                <input type="checkbox" class="mr-2" ${item.checked ? 'checked' : ''} data-index="${index}">
-                <span class="text-lg mr-2">${item.emoji}</span>
-                <span>${item.name} (${item.quantity}x)</span>
-            </div>
-            <div class="flex items-center">
-                <button class="text-primary-400 hover:text-primary-600 mr-2 add-to-shopping-list" data-index="${index}">
-                    <i class="fas fa-cart-plus"></i>
-                </button>
-                <button class="text-red-500 hover:text-red-700 remove-item" data-index="${index}">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
-        return li;
     }
 
     function updatePurchaseHistory() {
@@ -623,6 +686,123 @@ document.addEventListener('DOMContentLoaded', function() {
             showAlert('Você ultrapassou o orçamento!', 'warning');
         }
     }
+
+    // Adicionar função para abrir o modal de edição
+    function openEditProductModal(index) {
+        const product = products[index];
+        document.getElementById('editProductIndex').value = index;
+        document.getElementById('editProductName').value = product.name;
+        document.getElementById('editProductPrice').value = product.price;
+        document.getElementById('editProductQuantity').value = product.quantity;
+        document.getElementById('editProductCategory').value = product.category;
+        showModal(editProductModal);
+    }
+
+    // Adicionar evento de clique para o botão de editar
+    productList.addEventListener('click', (e) => {
+        if (e.target.closest('.edit-product')) {
+            const index = e.target.closest('.edit-product').dataset.index;
+            openEditProductModal(index);
+        }
+    });
+
+    // Adicionar evento de submit para o formulário de edição
+    editProductForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const index = parseInt(document.getElementById('editProductIndex').value);
+        const name = document.getElementById('editProductName').value;
+        const price = parseFloat(document.getElementById('editProductPrice').value);
+        const quantity = parseInt(document.getElementById('editProductQuantity').value);
+        const category = document.getElementById('editProductCategory').value;
+        const emoji = document.getElementById('editProductCategory').selectedOptions[0]?.textContent.split(' ')[0] || '🛒';
+
+        if (name && !isNaN(price) && !isNaN(quantity) && quantity > 0) {
+            products[index] = {
+                name,
+                price,
+                quantity,
+                category,
+                emoji
+            };
+            updateProductList();
+            closeModal(editProductModal);
+            showAlert('Produto atualizado com sucesso!', 'success');
+        } else {
+            showAlert('Por favor, preencha todos os campos corretamente.', 'error');
+        }
+    });
+
+    // Adicionar função para abrir o modal de edição para itens da lista
+    function openEditListItemModal(index) {
+        const item = myList[index];
+        document.getElementById('editProductIndex').value = index;
+        document.getElementById('editProductName').value = item.name;
+        document.getElementById('editProductQuantity').value = item.quantity;
+        document.getElementById('editProductCategory').value = item.category;
+        // Limpar o preço já que não é usado na lista
+        document.getElementById('editProductPrice').value = '';
+        showModal(editProductModal);
+    }
+
+    // Adicionar evento de clique para o botão de editar na lista
+    myListItems.addEventListener('click', (e) => {
+        if (e.target.closest('.edit-list-item')) {
+            const index = e.target.closest('.edit-list-item').dataset.index;
+            openEditListItemModal(index);
+        }
+    });
+
+    myListModalItems.addEventListener('click', (e) => {
+        if (e.target.closest('.edit-list-item')) {
+            const index = e.target.closest('.edit-list-item').dataset.index;
+            openEditListItemModal(index);
+        }
+    });
+
+    // Modificar o evento de submit do formulário de edição para suportar lista
+    editProductForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const index = parseInt(document.getElementById('editProductIndex').value);
+        const name = document.getElementById('editProductName').value;
+        const price = parseFloat(document.getElementById('editProductPrice').value);
+        const quantity = parseInt(document.getElementById('editProductQuantity').value);
+        const category = document.getElementById('editProductCategory').value;
+        const emoji = document.getElementById('editProductCategory').selectedOptions[0]?.textContent.split(' ')[0] || '🛒';
+
+        // Verifica se está editando um item da lista ou um produto
+        if (document.activeElement.closest('#myListItems, #myListModalItems')) {
+            if (name && !isNaN(quantity) && quantity > 0) {
+                myList[index] = {
+                    name,
+                    quantity,
+                    category,
+                    emoji,
+                    checked: myList[index].checked || false
+                };
+                updateMyList();
+                closeModal(editProductModal);
+                showAlert('Item da lista atualizado com sucesso!', 'success');
+            } else {
+                showAlert('Por favor, preencha todos os campos corretamente.', 'error');
+            }
+        } else {
+            // Lógica existente para edição de produtos
+            if (name && !isNaN(price) && !isNaN(quantity) && quantity > 0) {
+                products[index] = {
+                    name,
+                    price,
+                    quantity,
+                    category,
+                    emoji
+                };
+                updateProductList();
+                closeModal(editProductModal);
+                showAlert('Produto atualizado com sucesso!', 'success');
+            } else {
+                showAlert('Por favor, preencha todos os campos corretamente.', 'error');
+            }
+        }
+    });
 
     // Inicialização
     updateProductList();

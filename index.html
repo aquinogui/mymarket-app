@@ -207,6 +207,316 @@
         .nav-button:focus-visible {
             @apply outline-none ring-2 ring-primary-400 ring-offset-2 ring-offset-dark-200;
         }
+
+        /* Estilos para os tooltips */
+        .tooltip-bottom,
+        .tooltip-top {
+            position: relative;
+        }
+
+        .tooltip-bottom:before,
+        .tooltip-top:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 30;
+        }
+
+        .tooltip-bottom:before {
+            bottom: -2.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(-0.5rem);
+        }
+
+        .tooltip-top:before {
+            top: -2.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(0.5rem);
+        }
+
+        .tooltip-bottom:hover:before,
+        .tooltip-top:hover:before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Adicionar seta aos tooltips */
+        .tooltip-bottom:after,
+        .tooltip-top:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .tooltip-bottom:after {
+            bottom: -1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom: 6px solid rgba(0, 0, 0, 0.8);
+        }
+
+        .tooltip-top:after {
+            top: -1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top: 6px solid rgba(0, 0, 0, 0.8);
+        }
+
+        .tooltip-bottom:hover:after,
+        .tooltip-top:hover:after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Melhorias de acessibilidade */
+        @media (prefers-reduced-motion: reduce) {
+            .tooltip-bottom:before,
+            .tooltip-top:before,
+            .tooltip-bottom:after,
+            .tooltip-top:after {
+                transition: none;
+            }
+        }
+
+        /* Suporte para navegação por teclado */
+        .tooltip-bottom:focus-visible:before,
+        .tooltip-top:focus-visible:before,
+        .tooltip-bottom:focus-visible:after,
+        .tooltip-top:focus-visible:after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Estilos base para tooltips */
+        [class*="tooltip-"] {
+            position: relative;
+        }
+
+        /* Conteúdo do tooltip */
+        [class*="tooltip-"]:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 30;
+        }
+
+        /* Seta do tooltip */
+        [class*="tooltip-"]:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Posicionamento específico para cada direção */
+        .tooltip-top:before {
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-0.5rem);
+        }
+
+        .tooltip-bottom:before {
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(0.5rem);
+        }
+
+        .tooltip-right:before {
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%) translateX(0.5rem);
+        }
+
+        .tooltip-left:before {
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%) translateX(-0.5rem);
+        }
+
+        /* Setas para cada direção */
+        .tooltip-top:after {
+            bottom: calc(100% - 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            border-top-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .tooltip-bottom:after {
+            top: calc(100% - 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .tooltip-right:after {
+            left: calc(100% - 6px);
+            top: 50%;
+            transform: translateY(-50%);
+            border-right-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .tooltip-left:after {
+            right: calc(100% - 6px);
+            top: 50%;
+            transform: translateY(-50%);
+            border-left-color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Estados hover e focus */
+        [class*="tooltip-"]:hover:before,
+        [class*="tooltip-"]:hover:after,
+        [class*="tooltip-"]:focus-visible:before,
+        [class*="tooltip-"]:focus-visible:after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip-top:hover:before,
+        .tooltip-top:focus-visible:before {
+            transform: translateX(-50%) translateY(-0.25rem);
+        }
+
+        .tooltip-bottom:hover:before,
+        .tooltip-bottom:focus-visible:before {
+            transform: translateX(-50%) translateY(0.25rem);
+        }
+
+        .tooltip-right:hover:before,
+        .tooltip-right:focus-visible:before {
+            transform: translateY(-50%) translateX(0.25rem);
+        }
+
+        .tooltip-left:hover:before,
+        .tooltip-left:focus-visible:before {
+            transform: translateY(-50%) translateX(-0.25rem);
+        }
+
+        /* Tooltip moderno com backdrop blur */
+        .tooltip-modern:before {
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Acessibilidade */
+        @media (prefers-reduced-motion: reduce) {
+            [class*="tooltip-"]:before,
+            [class*="tooltip-"]:after {
+                transition: none;
+            }
+        }
+
+        /* Suporte para navegação por teclado */
+        [class*="tooltip-"]:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        /* Estilo para seção ativa */
+        main section {
+            transition: all 0.3s ease-out;
+        }
+
+        /* Melhorar espaçamento entre seções */
+        main section + section {
+            margin-top: 2rem;
+        }
+
+        /* Estilo para botão ativo */
+        .nav-button.active {
+            @apply bg-primary-600/20 text-primary-400;
+        }
+
+        /* Melhorar responsividade */
+        @media (max-width: 768px) {
+            main section + section {
+                margin-top: 1.5rem;
+            }
+        }
+
+        /* Garantir que as seções sejam visíveis quando ativas */
+        main section {
+            transition: opacity 0.3s ease-out;
+        }
+
+        /* Prevenir problemas de display */
+        main section {
+            display: block;
+        }
+
+        /* Estilos para o estado ativo dos botões */
+        [data-target].active {
+            @apply bg-primary-600/20 text-primary-400;
+        }
+
+        /* Animação de fade in */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        /* Espaçamento entre seções */
+        main section + section {
+            margin-top: 2rem;
+        }
+
+        /* Transições suaves */
+        main section {
+            transition: opacity 0.3s ease-out;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -258,7 +568,8 @@
                     <img src="logo.png" alt="Logo" class="w-16 h-16 rounded-full mb-4">
                     <h1 class="text-xl font-bold text-primary-400 text-center mb-8">My Market Pro</h1>
                     <div class="flex flex-col items-start space-y-4 w-full">
-                        <button class="nav-button w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-primary-600 hover:text-white transition-colors duration-200" data-target="home">
+                        <button class="nav-button flex items-center space-x-2 p-2 w-full rounded-lg hover:bg-primary-600 hover:text-white transition-colors duration-200" 
+                            data-target="home">
                             <i class="fas fa-home w-6"></i>
                             <span>Home</span>
                         </button>
@@ -281,10 +592,10 @@
                     </div>
                 </div>
                 <div class="flex space-x-4 mt-auto">
-                    <button id="openUserModal" class="p-2 rounded-full text-gray-400 hover:bg-secondary-500 hover:text-white transition-colors duration-200">
+                    <button id="openUserModal" class="tooltip-right p-2" data-tooltip="Configurações do Usuário">
                         <i class="fas fa-user"></i>
                     </button>
-                    <button id="openHelpModal" class="p-2 rounded-full text-gray-400 hover:bg-secondary-500 hover:text-white transition-colors duration-200">
+                    <button id="openHelpModal" class="tooltip-right p-2" data-tooltip="Ajuda">
                         <i class="fas fa-question-circle"></i>
                     </button>
                 </div>
@@ -321,7 +632,7 @@
                     <div class="glass-effect neumorph-inset p-4 rounded-lg interactive-hover">
                         <h3 class="text-lg font-semibold mb-2 text-primary-300">Ações Rápidas</h3>
                         <div class="flex gap-2">
-                            <button id="quickAddProduct" class="btn-modern tooltip-modern interactive-hover bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200" data-tooltip="Adicionar novo produto">
+                            <button id="quickAddProduct" class="btn-modern tooltip-modern interactive-hover bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 flex items-center justify-center">
                                 <i class="fas fa-plus mr-2"></i>
                                 <span>Adicionar Produto</span>
                             </button>
@@ -358,7 +669,9 @@
                     <button class="calc-btn bg-primary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-primary-700 text-lg font-semibold">=</button>
                     <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold">+</button>
                     <button class="calc-btn col-span-2 bg-accent-500 text-white p-4 rounded transition-colors duration-200 hover:bg-accent-600 text-lg font-semibold">C</button>
-                    <button id="addToListBtn" class="col-span-2 bg-primary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-primary-700 text-lg font-semibold">Adicionar à Lista</button>
+                    <button id="addToListBtn" class="col-span-2 bg-primary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-primary-700 text-lg font-semibold tooltip-bottom" data-tooltip="Adicionar valor à lista">
+                        Adicionar à Lista
+                    </button>
                 </div>
             </section>
 
@@ -378,13 +691,13 @@
                     <span id="totalAmount" class="text-2xl font-bold text-primary-400 bg-dark-300 px-4 py-2 rounded-lg">R$ 0,00</span>
                 </div>
                 <div class="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    <button id="applyDiscountBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">
+                    <button id="applyDiscountBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 tooltip-top" data-tooltip="Aplicar desconto ao total">
                         <i class="fas fa-percent mr-2"></i>Aplicar Desconto
                     </button>
-                    <button id="applyTaxBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">
+                    <button id="applyTaxBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 tooltip-top" data-tooltip="Adicionar taxa ou acréscimo">
                         <i class="fas fa-plus mr-2"></i>Aplicar Acréscimo
                     </button>
-                    <button id="setBudgetBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">
+                    <button id="setBudgetBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 tooltip-top" data-tooltip="Definir limite de orçamento">
                         <i class="fas fa-wallet mr-2"></i>Definir Orçamento
                     </button>
                     <button id="savePurchaseBtn" class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-4 py-2 rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all duration-200">
@@ -448,11 +761,17 @@
                 <div class="flex justify-between items-center w-full relative">
                     <!-- Ícones da esquerda -->
                     <div class="flex items-center gap-8 mr-12">
-                        <button class="nav-button group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" data-target="home">
+                        <button class="nav-button tooltip-bottom group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" 
+                            data-target="home"
+                            data-tooltip="Página Inicial"
+                            aria-label="Ir para página inicial">
                             <i class="fas fa-home text-xl mb-1"></i>
                             <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Home</span>
                         </button>
-                        <button class="nav-button group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" data-target="shopping-list">
+                        <button class="nav-button tooltip-bottom group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" 
+                            data-target="shopping-list"
+                            data-tooltip="Lista de Compras"
+                            aria-label="Acessar lista de compras">
                             <i class="fas fa-shopping-cart text-xl mb-1"></i>
                             <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Lista</span>
                         </button>
@@ -460,7 +779,10 @@
 
                     <!-- Botão central de adicionar -->
                     <div class="absolute left-1/2 -translate-x-1/2 -translate-y-6 z-20">
-                        <button id="mobileAddBtn" class="w-14 h-14 rounded-full bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-lg hover:shadow-secondary-500/50 active:scale-95 transition-all duration-200 flex items-center justify-center transform hover:scale-110 hover:rotate-180">
+                        <button id="mobileAddBtn" 
+                            class="tooltip-top w-14 h-14 rounded-full bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-lg hover:shadow-secondary-500/50 active:scale-95 transition-all duration-200 flex items-center justify-center transform hover:scale-110 hover:rotate-180"
+                            data-tooltip="Adicionar Novo Produto"
+                            aria-label="Adicionar novo produto à lista">
                             <i class="fas fa-plus text-xl"></i>
                             <span class="sr-only">Adicionar Produto</span>
                         </button>
@@ -469,11 +791,17 @@
 
                     <!-- Ícones da direita -->
                     <div class="flex items-center gap-8 ml-12">
-                        <button class="nav-button group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" data-target="purchase-history">
+                        <button class="nav-button tooltip-bottom group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" 
+                            data-target="purchase-history"
+                            data-tooltip="Histórico de Compras"
+                            aria-label="Ver histórico de compras">
                             <i class="fas fa-history text-xl mb-1"></i>
                             <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Histórico</span>
                         </button>
-                        <button class="nav-button group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" data-target="spending-analysis">
+                        <button class="nav-button tooltip-bottom group flex flex-col items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-primary-600/20 hover:text-primary-400 active:scale-90 transition-all duration-200" 
+                            data-target="spending-analysis"
+                            data-tooltip="Análise de Gastos"
+                            aria-label="Ver análise de gastos">
                             <i class="fas fa-chart-bar text-xl mb-1"></i>
                             <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Análise</span>
                         </button>
@@ -643,78 +971,35 @@
         </div>
     </div>
 
+    <div id="editProductModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-dark-200 p-6 rounded-xl max-w-md w-full animate-slide-in">
+            <h3 class="text-xl font-semibold mb-4 text-primary-400">Editar Produto</h3>
+            <form id="editProductForm">
+                <input type="hidden" name="productIndex" id="editProductIndex">
+                <input type="text" name="name" id="editProductName" placeholder="Nome do Produto" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400">
+                <input type="number" name="price" id="editProductPrice" placeholder="Preço" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400" step="0.01">
+                <input type="number" name="quantity" id="editProductQuantity" placeholder="Quantidade" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400" value="1" min="1">
+                <select name="category" id="editProductCategory" class="w-full p-3 mb-3 rounded-lg bg-dark-300 text-gray-100 focus:ring-2 focus:ring-primary-400">
+                    <option value="">Categoria</option>
+                    <option value="Frutas">🍏 Frutas</option>
+                    <option value="Legumes">🥕 Legumes</option>
+                    <option value="Pães">🍞 Pães</option>
+                    <option value="Laticínios">🧀 Laticínios</option>
+                    <option value="Carnes">🍗 Carnes</option>
+                    <option value="Bebidas">🥤 Bebidas</option>
+                    <option value="Limpeza">🧼 Limpeza</option>
+                    <option value="Higiene">🧴 Higiene</option>
+                    <option value="Outros">🛒 Outros</option>
+                </select>
+                <button type="submit" class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200">Salvar Alterações</button>
+            </form>
+            <button class="close-modal mt-4 text-gray-400 hover:text-white transition-colors duration-200">Fechar</button>
+        </div>
+    </div>
+
     <script src="assets/main.js"></script>
 
-    <script>
-        // Botões mobile
-        const mobileHelpBtn = document.getElementById('mobileHelpBtn');
-        const mobileUserBtn = document.getElementById('mobileUserBtn');
-        
-        // Modais
-        const helpModal = document.getElementById('helpModal');
-        const userModal = document.getElementById('userModal');
-        
-        // Event listeners para botões mobile
-        mobileHelpBtn.addEventListener('click', () => {
-            helpModal.classList.remove('hidden');
-            helpModal.classList.add('flex');
-        });
-        
-        mobileUserBtn.addEventListener('click', () => {
-            userModal.classList.remove('hidden');
-            userModal.classList.add('flex');
-        });
-        
-        // Fechar modais
-        document.querySelectorAll('.close-modal').forEach(button => {
-            button.addEventListener('click', () => {
-                helpModal.classList.add('hidden');
-                helpModal.classList.remove('flex');
-                userModal.classList.add('hidden');
-                userModal.classList.remove('flex');
-            });
-        });
-        
-        // Fechar modal ao clicar fora
-        [helpModal, userModal].forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
-                }
-            });
-        });
-
-        // Botão de adicionar mobile
-        const mobileAddBtn = document.getElementById('mobileAddBtn');
-        const addProductModal = document.getElementById('addProductModal');
-
-        mobileAddBtn.addEventListener('click', () => {
-            addProductModal.classList.remove('hidden');
-            addProductModal.classList.add('flex');
-        });
-
-        // Gerenciar estado ativo dos botões
-        const navButtons = document.querySelectorAll('.nav-button');
-        
-        navButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                navButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-            });
-        });
-
-        // Adicionar haptic feedback em dispositivos que suportam
-        function triggerHapticFeedback() {
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
-        }
-
-        navButtons.forEach(button => {
-            button.addEventListener('click', triggerHapticFeedback);
-        });
-    </script>
+   
 
 </body>
 </html>
