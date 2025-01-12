@@ -313,15 +313,22 @@ document.addEventListener('DOMContentLoaded', function() {
             saveToLocalStorage();
             updateMyList();
         } else if (addToShoppingListBtn) {
-            const index = addToShoppingListBtn.dataset.index;
+            const index = parseInt(addToShoppingListBtn.dataset.index);
             const item = myList[index];
-            addProductToList({
-                name: { value: item.name },
-                price: { value: 0 },
-                quantity: { value: item.quantity },
-                category: { value: item.category, selectedOptions: [{ textContent: item.emoji + ' ' + item.category }] }
-            });
-            showAlert('Item adicionado à lista de compras!', 'success');
+            
+            // Adiciona diretamente ao array de produtos
+            if (item) {
+                products.push({
+                    name: item.name,
+                    price: 0,
+                    quantity: item.quantity || 1,
+                    category: item.category || 'Geral',
+                    emoji: item.emoji || '🛒'
+                });
+                updateProductList();
+                saveToLocalStorage();
+                showAlert('Produto adicionado à lista de compras!', 'success');
+            }
         } else if (removeItemBtn) {
             const index = removeItemBtn.dataset.index;
             myList.splice(index, 1);
@@ -403,35 +410,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Funções auxiliares
     function addProductToList(form) {
-        const name = form.name.value;
-        const price = parseFloat(form.price.value);
-        const quantity = parseInt(form.quantity.value);
-        const category = form.category.value;
-        const emoji = form.category.selectedOptions[0].textContent.split(' ')[0];
+        const name = form.name?.value || form.name;
+        const price = parseFloat(form.price?.value || 0);
+        const quantity = parseInt(form.quantity?.value || 1);
+        const category = form.category?.value || 'Geral';
+        const emoji = form.category?.selectedOptions?.[0]?.textContent.split(' ')[0] || '🛒';
 
-        if (name && price && quantity && category) {
-            products.push({ name, price, quantity, category, emoji });
+        if (name) {
+            products.push({ 
+                name, 
+                price: price || 0, 
+                quantity: quantity || 1, 
+                category: category || 'Geral', 
+                emoji: emoji || '🛒' 
+            });
             updateProductList();
-            form.reset();
+            if (form.reset) form.reset();
             showAlert('Produto adicionado com sucesso!', 'success');
         } else {
-            showAlert('Por favor, preencha todos os campos.', 'error');
+            showAlert('Por favor, insira pelo menos o nome do produto.', 'error');
         }
     }
 
     function addItemToMyList() {
         const name = myListForm.name.value;
-        const quantity = parseInt(myListForm.quantity.value);
-        const category = myListForm.category.value;
-        const emoji = myListForm.category.selectedOptions[0].textContent.split(' ')[0];
+        const quantity = parseInt(myListForm.quantity.value) || 1;
+        const category = myListForm.category.value || 'Geral';
+        const emoji = myListForm.category.selectedOptions[0]?.textContent.split(' ')[0] || '🛒';
 
-        if (name && quantity && category) {
+        if (name) {
             myList.push({ name, quantity, category, emoji, checked: false });
             updateMyList();
             myListForm.reset();
             showAlert('Item adicionado à sua lista!', 'success');
         } else {
-            showAlert('Por favor, preencha todos os campos.', 'error');
+            showAlert('Por favor, insira pelo menos o nome do item.', 'error');
         }
     }
 
