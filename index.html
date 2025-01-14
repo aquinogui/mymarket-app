@@ -642,11 +642,11 @@
                     <div class="glass-effect neumorph-inset p-4 rounded-lg interactive-hover">
                         <h3 class="text-lg font-semibold mb-2 text-primary-300">Ações Rápidas</h3>
                         <div class="flex gap-2">
-                            <button id="quickAddProduct" class="btn-modern tooltip-modern interactive-hover bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 flex items-center justify-center">
+                            <button id="quickAddProduct" class="btn-modern tooltip-modern interactive-hover bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 flex items-center justify-center"  data-tooltip="Adicionar um novo produto!">
                                 <i class="fas fa-plus mr-2"></i>
                                 <span>Adicionar Produto</span>
                             </button>
-                            <button id="quickViewList" class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-4 py-2 rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all duration-200">
+                            <button id="quickViewList" class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-4 py-2 rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all duration-200 tooltip-modern"  data-tooltip="Minha lista de compras salva!">
                                 <i class="fas fa-list mr-2"></i>
                                 Minha Lista
                             </button>
@@ -665,20 +665,20 @@
                     <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">7</button>
                     <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">8</button>
                     <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">9</button>
-                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold">/</button>
+                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold tooltip-modern"  data-tooltip="Divisão">/</button>
                     <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">4</button>
                     <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">5</button>
                     <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">6</button>
-                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold">*</button>
+                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold tooltip-modern"  data-tooltip="Multiplicação">*</button>
                     <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">1</button>
                     <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">2</button>
                     <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">3</button>
-                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold">-</button>
+                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold tooltip-modern"  data-tooltip="Subtração">-</button>
                     <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">0</button>
                     <button class="calc-btn bg-dark-300 p-4 rounded transition-colors duration-200 hover:bg-dark-100 text-lg font-semibold">.</button>
-                    <button class="calc-btn bg-primary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-primary-700 text-lg font-semibold">=</button>
-                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold">+</button>
-                    <button class="calc-btn col-span-2 bg-accent-500 text-white p-4 rounded transition-colors duration-200 hover:bg-accent-600 text-lg font-semibold">C</button>
+                    <button class="calc-btn bg-primary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-primary-700 text-lg font-semibold tooltip-modern"  data-tooltip="Resultado">=</button>
+                    <button class="calc-btn bg-secondary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-secondary-700 text-lg font-semibold tooltip-top"  data-tooltip="Somar">+</button>
+                    <button class="calc-btn col-span-2 bg-accent-500 text-white p-4 rounded transition-colors duration-200 hover:bg-accent-600 text-lg font-semibold tooltip-modern"  data-tooltip="Apagar">C</button>
                     <button id="addToListBtn" class="col-span-2 bg-primary-600 text-white p-4 rounded transition-colors duration-200 hover:bg-primary-700 text-lg font-semibold tooltip-bottom" data-tooltip="Adicionar valor à lista">
                         Adicionar à Lista
                     </button>
@@ -727,7 +727,7 @@
                 <h2 class="text-xl font-semibold mb-4 flex items-center text-primary-400">
                     <i class="fas fa-list-alt mr-2"></i>Minha Lista
                 </h2>
-                <button id="openMyListModal" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 mb-4">
+                <button id="openMyListModal" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 mb-4 tooltip-modern" data-tooltip="Adicionar produto à lista">
                     <i class="fas fa-plus mr-2"></i>Adicionar Item
                 </button>
                 <ul id="myListItems" class="space-y-2 max-h-96 overflow-y-auto scrollbar-hide">
