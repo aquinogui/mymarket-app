@@ -790,7 +790,7 @@
                     <!-- Botão central de adicionar -->
                     <div class="absolute left-1/2 -translate-x-1/2 -translate-y-6 z-20">
                         <button id="mobileAddBtn" 
-                            class="tooltip-top w-14 h-14 rounded-full bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-lg hover:shadow-secondary-500/50 active:scale-95 transition-all duration-200 flex items-center justify-center transform hover:scale-110 hover:rotate-180"
+                            class="tooltip-modern w-14 h-14 rounded-full bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-lg hover:shadow-secondary-500/50 active:scale-95 transition-all duration-200 flex items-center justify-center transform hover:scale-110"
                             data-tooltip="Adicionar Novo Produto"
                             aria-label="Adicionar novo produto à lista">
                             <i class="fas fa-plus text-xl"></i>
@@ -798,6 +798,26 @@
                         </button>
                         <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-16 h-16 bg-gradient-to-r from-secondary-500/20 to-secondary-600/20 rounded-full blur-xl -z-10"></div>
                     </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const addProductModal = document.getElementById('addProductModal');
+                            const mobileAddBtn = document.getElementById('mobileAddBtn');
+                            const closeModalBtn = addProductModal.querySelector('.close-modal');
+                    
+                            // Open the modal
+                            mobileAddBtn.addEventListener('click', function () {
+                                addProductModal.classList.remove('hidden');
+                                addProductModal.classList.add('flex');
+                            });
+                    
+                            // Close the modal
+                            closeModalBtn.addEventListener('click', function () {
+                                addProductModal.classList.add('hidden');
+                                addProductModal.classList.remove('flex');
+                            });
+                        });
+                    </script>
 
                     <!-- Ícones da direita -->
                     <div class="flex items-center gap-8 ml-12">
